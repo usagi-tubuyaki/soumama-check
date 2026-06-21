@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>発達特性セルフチェック</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;background:#f7f7f5;color:#1a1a1a;min-height:100vh;padding:1.5rem 1rem}
+.wrap{max-width:560px;margin:0 auto}
+h1{font-size:18px;font-weight:600;margin-bottom:6px;color:#1a1a1a}
+.intro{font-size:14px;color:#666;line-height:1.6;margin-bottom:1.5rem}
+.step-label{font-size:13px;color:#999;margin-bottom:6px}
+.progress{height:4px;background:#e0e0e0;border-radius:2px;overflow:hidden;margin-bottom:1.25rem}
+.progress-bar{height:100%;background:#378ADD;border-radius:2px;transition:width 0.3s}
+.step-title{font-size:15px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
+.step-sub{font-size:13px;color:#888;margin-bottom:1rem}
+.section{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
+.item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.item:last-child{border-bottom:none;padding-bottom:0}
+.item:first-child{padding-top:0}
+.checkbox{width:22px;height:22px;border:1.5px solid #ccc;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:background 0.15s,border-color 0.15s}
+.checkbox.checked{background:#378ADD;border-color:#378ADD}
+.checkmark{width:12px;height:12px;opacity:0;transition:opacity 0.1s}
+.checkbox.checked .checkmark{opacity:1}
+.item-label{font-size:14px;color:#1a1a1a;line-height:1.6}
+.counter{font-size:12px;color:#aaa;text-align:right;margin-top:10px}
+.btn-next{width:100%;padding:13px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;background:#1a1a1a;border:none;color:#fff;margin-top:0.5rem;-webkit-tap-highlight-color:transparent}
+.btn-next:active{opacity:0.8}
+.result-wrap{display:none}
+.result-wrap.show{display:block}
+.result-title{font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:1rem}
+.result-card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.75rem}
+.result-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0}
+.result-row:last-child{border-bottom:none}
+.result-name{font-size:13px;color:#666;min-width:50px}
+.result-bar-wrap{flex:1;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden}
+.result-bar{height:100%;border-radius:3px;transition:width 0.5s}
+.b0{background:#378ADD}.b1{background:#534AB7}.b2{background:#639922}.b3{background:#BA7517}
+.result-score{font-size:13px;color:#888;min-width:36px;text-align:right}
+.hit-section{margin-top:0.75rem;padding:1rem 1.25rem;background:#fff;border:1px solid #e8e8e8;border-radius:12px}
+.hit-title{font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:10px}
+.hit-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tag{font-size:13px;padding:4px 12px;border-radius:20px;font-weight:600}
+.tag-0{background:#E6F1FB;color:#0C447C}
+.tag-1{background:#EEEDFE;color:#3C3489}
+.tag-2{background:#EAF3DE;color:#27500A}
+.tag-3{background:#FAEEDA;color:#633806}
+.no-hit{font-size:13px;color:#888}
+.note{font-size:12px;color:#aaa;line-height:1.7;padding-top:10px;border-top:1px solid #f0f0f0}
+.line-link{display:block;margin-top:1rem;padding:13px;background:#06C755;border-radius:10px;color:#fff;font-size:14px;font-weight:600;text-align:center;text-decoration:none}
+.reset{font-size:13px;color:#aaa;text-align:center;margin-top:14px;cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>発達特性セルフチェック</h1>
+  <p class="intro">お子さんの様子で気になる項目にチェックしてください。4つのリストを順番に進んでいきます。</p>
+
+  <div id="check-area">
+    <div class="step-label" id="step-label">リスト 1 / 4</div>
+    <div class="progress"><div class="progress-bar" id="progress-bar" style="width:25%"></div></div>
+    <div class="step-title">気になる項目にチェックしてください</div>
+    <div class="step-sub">当てはまると思うものをすべて選んでください</div>
+    <div class="section">
+      <div id="item-list"></div>
+      <div class="counter" id="counter">0 / 10</div>
+    </div>
+    <button class="btn-next" id="btn-next" onclick="nextStep()">次へ →</button>
+  </div>
+
+  <div class="result-wrap" id="result-wrap">
+    <div class="result-title">チェック結果</div>
+    <div class="result-card" id="result-bars"></div>
+    <div class="hit-section">
+      <div class="hit-title" id="hit-title"></div>
+      <div class="hit-tags" id="hit-tags"></div>
+      <p class="note">これはセルフチェックです。診断ではありません。気になる場合は専門家への相談をおすすめします。</p>
+    </div>
+    <a class="line-link" href="https://line.me/ti/g2/YOUR_OPENCHAT_ID" target="_blank">🔔 オープンチャットでもっと詳しく知る</a>
+    <p class="reset" onclick="resetAll()">もう一度チェックする</p>
+  </div>
+</div>
+
+<script>
+const steps=[
+  {items:["じっとしていられない、体をよく動かす","話を最後まで聞かずに動き出す","忘れ物・なくし物が多い","順番を待つのが苦手","やりたいことに集中しすぎて切り替えが難しい","思いついたらすぐ口に出してしまう","宿題や片付けをなかなか始められない","同じミスを繰り返してしまう","興味がないことへの集中が続かない","時間の感覚がつかみにくい"],label:"ADHD",tagClass:"tag-0",barClass:"b0"},
+  {items:["人が話しているときに割り込んでしまう","友達との関わりが独特で浮いてしまう","特定のルーティンや順序にこだわる","冗談や皮肉が通じにくい","表情や場の空気を読むのが難しい","特定のものへの強い興味・こだわりがある","急な予定変更でパニックになりやすい","集団の中にいると疲れやすい","口頭の指示より書いてある方が理解しやすい","言葉どおりに受け取ってしまう"],label:"ASD",tagClass:"tag-1",barClass:"b1"},
+  {items:["文字を読むのがゆっくりで疲れやすい","音読を嫌がる・つかえることが多い","書くことが極端に苦手・字が整いにくい","漢字がなかなか覚えられない","計算ミスが多い・繰り上がりが難しい","文章を書くとき何を書けばいいかわからなくなる","板書を写すのに時間がかかる","やればできるのにやる気が出にくい","テストの点数にムラがある","口頭での指示が2つ以上になると難しい"],label:"LD",tagClass:"tag-2",barClass:"b2"},
+  {items:["行き渋りや不登校の傾向がある","なんとなく育てにくいと感じる","わがままに見えるが傷つきやすい","集団に入るのが苦手","いつも不安がっている","人の顔色をうかがってしまう","感受性が豊かで感情の波が大きい","音・におい・味・触覚への敏感さがある","夜になると不安が強くなる・眠れない","悲しい話や映像に強く影響を受ける"],label:"HSC",tagClass:"tag-3",barClass:"b3"}
+];
+
+let current=0;
+const scores=[0,0,0,0];
+const checked=[new Array(10).fill(false),new Array(10).fill(false),new Array(10).fill(false),new Array(10).fill(false)];
+
+function renderStep(){
+  document.getElementById('step-label').textContent=`リスト ${current+1} / 4`;
+  document.getElementById('progress-bar').style.width=((current+1)/4*100)+'%';
+  document.getElementById('btn-next').textContent=current===3?'結果を見る':'次へ →';
+  const list=document.getElementById('item-list');
+  list.innerHTML='';
+  steps[current].items.forEach((text,i)=>{
+    const div=document.createElement('div');
+    div.className='item';
+    div.innerHTML=`<div class="checkbox${checked[current][i]?' checked':''}" id="cb-${i}"><svg class="checkmark" viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 5,9.5 10.5,2.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">${text}</span>`;
+    div.onclick=()=>toggle(i);
+    list.appendChild(div);
+  });
+  document.getElementById('counter').textContent='0 / 10';
+  updateCounter();
+}
+
+function toggle(i){
+  checked[current][i]=!checked[current][i];
+  document.getElementById('cb-'+i).classList.toggle('checked',checked[current][i]);
+  updateCounter();
+}
+
+function updateCounter(){
+  const c=checked[current].filter(Boolean).length;
+  document.getElementById('counter').textContent=c+' / 10';
+}
+
+function nextStep(){
+  scores[current]=checked[current].filter(Boolean).length;
+  if(current<3){current++;renderStep();window.scrollTo({top:0,behavior:'smooth'});}
+  else{showResult();}
+}
+
+function showResult(){
+  document.getElementById('check-area').style.display='none';
+  const rw=document.getElementById('result-wrap');
+  rw.classList.add('show');
+  const bars=document.getElementById('result-bars');
+  bars.innerHTML='';
+  steps.forEach((s,i)=>{
+    const pct=Math.round(scores[i]/10*100);
+    bars.innerHTML+=`<div class="result-row"><span class="result-name">${s.label}</span><div class="result-bar-wrap"><div class="result-bar ${s.barClass}" style="width:${pct}%"></div></div><span class="result-score">${scores[i]}/10</span></div>`;
+  });
+  const hits=steps.filter((_,i)=>scores[i]>=6);
+  const tagsEl=document.getElementById('hit-tags');
+  const titleEl=document.getElementById('hit-title');
+  tagsEl.innerHTML='';
+  if(hits.length===0){
+    titleEl.textContent='6項目以上当てはまる特性はありませんでした';
+    tagsEl.innerHTML='<span class="no-hit">引き続きお子さんの様子を見守ってあげてください。</span>';
+  }else{
+    titleEl.textContent='多く当てはまった特性';
+    hits.forEach(s=>{tagsEl.innerHTML+=`<span class="tag ${s.tagClass}">${s.label}</span>`;});
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function resetAll(){
+  current=0;scores.fill(0);
+  checked.forEach(a=>a.fill(false));
+  document.getElementById('check-area').style.display='block';
+  document.getElementById('result-wrap').classList.remove('show');
+  renderStep();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+renderStep();
+</script>
+</body>
+</html>
